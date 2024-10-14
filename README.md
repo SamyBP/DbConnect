@@ -18,7 +18,7 @@ of inserts due to an increased number of threads
 
 * To setup the database run:
 
-        python main.py init
+        python main.py setup
 
 * All simulations will start by running:
 
