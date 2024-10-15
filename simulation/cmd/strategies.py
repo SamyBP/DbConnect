@@ -1,7 +1,7 @@
 import time
 
 from cmd import constants
-from db import queries, util
+from db import db
 
 
 class Strategy:
@@ -24,8 +24,8 @@ class NewConnectionPerQueryStrategy(Strategy):
     def apply(self):
         end_time = time.time_ns() + self.duration_ns
         while time.time_ns() < end_time:
-            connection = util.get_connection(self.credentials)
-            queries.add_entry(connection)
+            connection = db.get_connection(self.credentials)
+            db.add_entry(connection)
             connection.close()
 
 
@@ -33,12 +33,12 @@ class OneConnectionPerSimulationStrategy(Strategy):
 
     def __init__(self, credentials: dict, duration_min: int):
         super().__init__(credentials, duration_min)
-        self.connection = util.get_connection(credentials)
+        self.connection = db.get_connection(credentials)
 
     def apply(self):
         end_time = time.time_ns() + self.duration_ns
         while time.time_ns() < end_time:
-            queries.add_entry(self.connection)
+            db.add_entry(self.connection)
         self.connection.close()
 
 
@@ -49,4 +49,3 @@ class ConnectionPoolStrategy(Strategy):
 
     def apply(self):
         print(f"ConnectionPool {self.duration_ns}")
-
