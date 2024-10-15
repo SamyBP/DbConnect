@@ -1,4 +1,5 @@
 import time
+from concurrent.futures import ThreadPoolExecutor
 
 from cmd import constants
 from db import db
@@ -44,8 +45,18 @@ class OneConnectionPerSimulationStrategy(Strategy):
 
 class ConnectionPoolStrategy(Strategy):
 
-    def __init__(self, credentials: dict, duration_min: int):
+    def __init__(self, credentials: dict, duration_min: int, thread_count: int = 2):
         super().__init__(credentials, duration_min)
+        self.connection_pool = db.get_connection_pool(credentials)
+        self.thread_count = thread_count
 
     def apply(self):
-        print(f"ConnectionPool {self.duration_ns}")
+        end_time = time.time_ns() + self.duration_ns
+        with ThreadPoolExecutor(max_workers=self.thread_count) as executor:
+            while time.time_ns() < end_time:
+                executor.submit(self.__run_query())
+
+    def __run_query(self):
+        connection = self.connection_pool.getconn()
+        db.add_entry(connection)
+        self.connection_pool.putconn(connection)
