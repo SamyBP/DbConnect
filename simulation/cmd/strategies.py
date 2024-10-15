@@ -49,3 +49,4 @@ class ConnectionPoolStrategy(Strategy):
 
     def apply(self):
         print(f"ConnectionPool {self.duration_ns}")
+

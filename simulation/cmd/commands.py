@@ -23,11 +23,7 @@ class SetupCommand(Command):
 
     def execute(self):
         print("Setup: trying to establish connection")
-        connection = psycopg2.connect(
-            database=self.credentials.get("database"),
-            user=self.credentials.get("user"),
-            password=self.credentials.get("password")
-        )
+        connection = util.get_connection(self.credentials)
         print("Setup: connection established, creating test table")
         queries.create_test_table(connection)
         print("Setup: table created, closing connection")
@@ -44,9 +40,12 @@ class StartCommand(Command):
 
     def execute(self):
         for strategy in self.strategies:
+            print(f"Applying strategy: {strategy.__class__.__name__}:")
             strategy.apply()
             connection = util.get_connection(self.credentials)
-            print(f"{queries.get_number_of_inserts(connection)}")
+            insert_count = queries.get_number_of_inserts(connection)
+            print(f"Strategy: {strategy.__class__.__name__} applied. Total insert count is:{insert_count}")
+            print(f"Running cleanup between tests:")
             queries.cleanup_between_tests(connection)
             connection.close()
 
