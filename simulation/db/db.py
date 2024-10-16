@@ -10,7 +10,7 @@ def get_connection(credentials: dict):
     )
 
 
-def get_connection_pool(credentials: dict, min_connections: int = 1, max_connections: int = 10):
+def get_connection_pool(credentials: dict, min_connections: int = 10, max_connections: int = 10):
     return pool.ThreadedConnectionPool(
         minconn=min_connections,
         maxconn=max_connections,

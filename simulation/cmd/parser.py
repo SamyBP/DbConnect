@@ -11,7 +11,7 @@ class CommandLineParser:
         strategies = [
             NewConnectionPerQueryStrategy(credentials, int(sys.argv[3])),
             OneConnectionPerSimulationStrategy(credentials, int(sys.argv[3])),
-            ConnectionPoolStrategy(credentials, int(sys.argv[3]))
+            ConnectionPoolStrategy(credentials, int(sys.argv[3]), int(sys.argv[5]))
         ]
         self.commands = {
             "setup": SetupCommand(credentials),

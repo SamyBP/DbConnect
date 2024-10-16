@@ -51,12 +51,12 @@ class ConnectionPoolStrategy(Strategy):
         self.thread_count = thread_count
 
     def apply(self):
-        end_time = time.time_ns() + self.duration_ns
         with ThreadPoolExecutor(max_workers=self.thread_count) as executor:
-            while time.time_ns() < end_time:
-                executor.submit(self.__run_query())
+            executor.submit(self.__run_query())
 
     def __run_query(self):
-        connection = self.connection_pool.getconn()
-        db.add_entry(connection)
-        self.connection_pool.putconn(connection)
+        end_time = time.time_ns() + self.duration_ns
+        while time.time_ns() < end_time:
+            connection = self.connection_pool.getconn()
+            db.add_entry(connection)
+            self.connection_pool.putconn(connection)

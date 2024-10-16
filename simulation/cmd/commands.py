@@ -1,7 +1,7 @@
 from typing import List
 
+from cmd import plot
 from cmd.strategies import Strategy
-
 from db import db
 
 
@@ -38,12 +38,15 @@ class StartCommand(Command):
         self.strategies = strategies
 
     def execute(self):
+        results = {}
         for strategy in self.strategies:
             print(f"Applying strategy: {strategy.__class__.__name__}:")
             strategy.apply()
             connection = db.get_connection(self.credentials)
             insert_count = db.get_number_of_inserts(connection)
+            results[strategy.__class__.__name__] = insert_count
             print(f"Strategy: {strategy.__class__.__name__} applied. Total insert count is:{insert_count}")
             print(f"Running cleanup between tests:")
             db.cleanup_between_tests(connection)
             connection.close()
+        plot.figure(results)

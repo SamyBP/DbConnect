@@ -1,8 +1,9 @@
 import os
 import sys
 
-from cmd.parser import CommandLineParser
 from dotenv import load_dotenv
+
+from cmd.parser import CommandLineParser
 
 if __name__ == '__main__':
     load_dotenv()
