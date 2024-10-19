@@ -55,6 +55,6 @@ The script will run an insert sql query for a specified time with the following 
 
 # Results
 
-| One Minute with two theads 	| One minute with four threads 	|
-|---	|---	|
-| ![Test one minute with two threads](results/OneMinuteTwoThreads.png) 	| ![Test one minute with four threads](results/OneMinuteFourThreads.png) 	|
+| One Minute with two theads 	| Two minutes with four threads 	                                            |
+|---	|----------------------------------------------------------------------------|
+| ![Test one minute with two threads](results/OneMinuteTwoThreads.png) 	| ![Test two minutes with four threads](results/TwoMinutesFourThreads.png) 	 |

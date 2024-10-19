@@ -1,3 +1,6 @@
+import datetime
+
+from datetime import datetime
 from typing import List
 
 from cmd import plot
@@ -40,13 +43,14 @@ class StartCommand(Command):
     def execute(self):
         results = {}
         for strategy in self.strategies:
-            print(f"Applying strategy: {strategy.__class__.__name__}:")
+            strategy_name = strategy.__class__.__name__
+            print(f"[{datetime.now()}] Applying strategy: {strategy_name}:")
             strategy.apply()
             connection = db.get_connection(self.credentials)
             insert_count = db.get_number_of_inserts(connection)
-            results[strategy.__class__.__name__] = insert_count
-            print(f"Strategy: {strategy.__class__.__name__} applied. Total insert count is:{insert_count}")
-            print(f"Running cleanup between tests:")
+            results[strategy_name] = insert_count
+            print(f"[{datetime.now()}] Strategy: {strategy_name} applied. Total insert count is:{insert_count}")
+            print(f"[{datetime.now()}] Running cleanup between tests:")
             db.cleanup_between_tests(connection)
             connection.close()
         plot.figure(results)

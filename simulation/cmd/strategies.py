@@ -1,5 +1,5 @@
+import threading
 import time
-from concurrent.futures import ThreadPoolExecutor
 
 from cmd import constants
 from db import db
@@ -49,14 +49,29 @@ class ConnectionPoolStrategy(Strategy):
         super().__init__(credentials, duration_min)
         self.connection_pool = db.get_connection_pool(credentials)
         self.thread_count = thread_count
+        self.stop_threads = threading.Event()
 
     def apply(self):
-        with ThreadPoolExecutor(max_workers=self.thread_count) as executor:
-            executor.submit(self.__run_query())
+        threads = self.__create_threads()
+        simulation_time = self.duration_ns / constants.NANO_TO_SEC
+        time.sleep(simulation_time)
+        self.stop_threads.set()
+        self.__join_threads(threads)
+
+    def __create_threads(self):
+        threads = list()
+        for _ in range(self.thread_count):
+            th = threading.Thread(target=self.__run_query)
+            threads.append(th)
+            th.start()
+        return threads
 
     def __run_query(self):
-        end_time = time.time_ns() + self.duration_ns
-        while time.time_ns() < end_time:
+        while not self.stop_threads.is_set():
             connection = self.connection_pool.getconn()
             db.add_entry(connection)
             self.connection_pool.putconn(connection)
+
+    def __join_threads(self, threads):
+        for th in threads:
+            th.join()
