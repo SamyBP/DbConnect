@@ -44,7 +44,7 @@ The script will run an insert sql query for a specified time with the following 
 
 * All simulations will start by running:
 
-        python main.py start --time <time_of_the_simulation_in_minutes> --threads <integer_number_of_threads> 
+        python main.py start --time <sim_time_minutes> --threads <th_count> 
 
 # Expectations
 
@@ -58,3 +58,6 @@ The script will run an insert sql query for a specified time with the following 
 | One Minute with two theads 	| Two minutes with four threads 	                                            |
 |---	|----------------------------------------------------------------------------|
 | ![Test one minute with two threads](results/OneMinuteTwoThreads.png) 	| ![Test two minutes with four threads](results/TwoMinutesFourThreads.png) 	 |
+
+* Creating a new connection for every query has a lot of overhead, this strategy does approximately **0.6%** of the work a single connection strategy does
+* With a connection pool and multiple threads, a thread does about **74%** of the work a single connection strategy does, thus using more threads will result in more database operations over the same period of time
